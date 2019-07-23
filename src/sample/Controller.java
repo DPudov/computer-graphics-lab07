@@ -8,6 +8,7 @@ import javafx.scene.input.MouseButton;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.paint.Color;
 
+import java.util.Arrays;
 import java.util.LinkedList;
 
 public class Controller {
@@ -216,13 +217,19 @@ public class Controller {
 
     private int[] getCode(Point point, Cutter cutter) {
         int[] result = new int[4];
+        for (int i = 0; i < result.length; i++) {
+            result[i] = 0;
+        }
         if (point.getX() < cutter.getTopLeft().getX()) {
             result[0] = 1;
-        } else if (point.getX() > cutter.getBottomRight().getX()) {
+        }
+        if (point.getX() > cutter.getBottomRight().getX()) {
             result[1] = 1;
-        } else if (point.getY() < cutter.getTopLeft().getY()) {
+        }
+        if (point.getY() < cutter.getTopLeft().getY()) {
             result[2] = 1;
-        } else if (point.getY() > cutter.getBottomRight().getY()) {
+        }
+        if (point.getY() > cutter.getBottomRight().getY()) {
             result[3] = 1;
         }
         return result;
@@ -246,7 +253,6 @@ public class Controller {
             int[] T1 = getCode(p1, cutter);
             int[] T2 = getCode(p2, cutter);
 
-
             int S1 = sum(T1);
             int S2 = sum(T2);
 
@@ -263,6 +269,7 @@ public class Controller {
 
 
             if (sum(P) != 0) {
+
                 return;
             }
 
@@ -279,21 +286,23 @@ public class Controller {
                 continue;
             }
 
+            int n = 1;
             while (true) {
+
                 double x1 = p1.getX();
                 double x2 = p2.getX();
                 double y1 = p1.getY();
                 double y2 = p2.getY();
-                double len = Math.sqrt((x1 - x2) * (x1 - x2) + (y1 - y2) * (y1 - y2));
+                double len = Math.abs(x1 - x2 + y1 - y2) / Math.pow(2, n);
                 if (len < eps) {
                     p1 = new Point(p2.getX(), p2.getY());
                     p2 = new Point(tmp.getX(), tmp.getY());
                     i++;
                     break;
                 } else {
-                    Point Psr = new Point((x1 + x2) / 2, (y1 + y2) / 2);
+                    Point pointMiddle = new Point((x1 + x2) / 2, (y1 + y2) / 2);
                     Point Pm = new Point(x1, y1);
-                    p1 = new Point(Psr.getX(), Psr.getY());
+                    p1 = new Point(pointMiddle.getX(), pointMiddle.getY());
                     T1 = getCode(p1, cutter);
                     T2 = getCode(p2, cutter);
                     P = new int[4];
@@ -303,9 +312,10 @@ public class Controller {
 
                     if (sum(P) != 0) {
                         p1 = new Point(Pm.getX(), Pm.getY());
-                        p2 = new Point(Psr.getX(), Psr.getY());
+                        p2 = new Point(pointMiddle.getX(), pointMiddle.getY());
                     }
                 }
+                n++;
             }
 
         }
